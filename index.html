@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Buscador de CEP e Previsão do Tempo</title>
+</head>
+
+<body>
+
+    <nav id="navegacao">
+        <div>
+            <h1>DncWeather</h1>
+        </div>
+        <div id="links">
+            <a href="#menucep">Endereços</a>
+            <a href="#menutempo">Previsão do tempo</a>
+        </div>
+    </nav>
+
+    <header>
+        <div>
+            <h1>Descubra Mais com Precisão: <br> Previsões do Tempo e endereços <br> em tempo real.</h1>
+        </div>
+        <div>
+            <img src="nuvem.svg" alt="">
+        </div>
+    </header>
+
+    <form id="form" action="https://api.sheetmonkey.io/form/nTLNXBmgDw3zHPbqCWo2C4" method="post">
+        <div>
+            <label> Primeiro Nome<br>
+                <input type="text" id="nome" name="Name" required placeholder="Insira seu primeiro nome">
+            </label>
+                <input type="hidden" name="Created" value="x-sheetmonkey-current-date-time" />
+
+        </div>
+        <div>
+            <label> Email<br>
+                <input type="text" id="email" name="Email" required placeholder="Insira seu email">
+            </label>
+        </div>
+        <div>
+            <label> Digite o CEP<br>
+                <input type="text" id="cep" name="CEP" required placeholder="Insira o CEP">
+            </label>
+        </div>
+        <div>
+            <label> Digite a latitude e longitude para saber a previsão:<br>
+                <div>
+                    <input type="text" id="latitude" name="Latitude" required placeholder="Latitude"> <input type="text" id="longitude" name="Longitude"
+                        placeholder="Longitude">
+                </div>
+            </label>
+            
+        </div>
+        <button type="submit" onclick="ResultadoEndereco();ResultadoTempo()">Acessar</button>
+    </form>
+    
+    
+
+
+    <section id="menucep">
+        <div>
+            Resultado da busca por CEP: <img src="cep.svg" alt="">
+        </div>
+
+        <div class="alinhar corcep">
+            <div>Logradouro/nome</div>
+            <div>Bairro/Distrito</div>
+            <div>Localidade/UF</div>
+        </div>
+        <div class="alinhar">
+            <div><input type="text" id="rua" readonly></div>
+            <div><input type="text" name="" id="bairro" readonly></div>
+            <div><input type="text" name="" id="cidade" readonly></div>
+        </div>
+        </div>
+    </section>
+
+    <section id="menutempo">
+        <div>
+            Previsão do tempo na região: <img src="tempo.svg" alt="">
+        </div>
+        <div><input type="text" id="respostatempo" readonly></div>
+    </section>
+
+    <footer>
+        <a href="https://www.escoladnc.com.br/" target="_blank">Termos de Uso</a> | <a
+            href="https://www.escoladnc.com.br/" target="_blank">Política de Privacidade</a>
+    </footer>
+
+    <script>
+        async function ResultadoEndereco() {
+            const cep = window.document.getElementById('cep').value;
+
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+                window.document.getElementById('rua').value = data.logradouro;
+                window.document.getElementById('bairro').value = data.bairro;
+                window.document.getElementById('cidade').value = data.localidade;
+            } catch (error) {
+                alert("Verifique os valores para o CEP");                
+            }
+        }
+
+        async function ResultadoTempo() {
+            const lat = window.document.getElementById('latitude').value;
+            const long = window.document.getElementById('longitude').value;
+
+            try {
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&hourly=temperature_2m`)
+                const data = await response.json();
+                window.document.getElementById('respostatempo').value = `Previsão de tempo de acordo com a região: ${data.hourly.temperature_2m[0]}° C`
+            } catch (error) {
+                alert("Verifique os valores para Latitude e/ou Longitude");              
+            }
+        }
+
+        const form = document.getElementById('form')
+        form.addEventListener('submit', e => {
+        e.preventDefault()
+        })
+        
+
+    </script>
+
+</body>
+
+</html>
